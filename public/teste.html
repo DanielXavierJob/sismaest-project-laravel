@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chatterbox</title>
+</head>
+
+<body>
+    <div id="chat">
+        <ul id="messages"></ul>
+        <form id="send-message">
+            <input id="chat-txt" type="text" />
+            <button id="chat-btn" type="submit">Submit</button>
+        </form>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfuHdjVCvHLuDoLHFmliBx2FmXGHRgosA",
+            authDomain: "sismaest.firebaseapp.com",
+            projectId: "sismaest",
+            storageBucket: "sismaest.appspot.com",
+            messagingSenderId: "488217646153",
+            appId: "1:488217646153:web:5be4cbbb339a30b82b1b98",
+            measurementId: "G-JYDQZ9XZPZ"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const username = prompt("What's your name?");
+        document.getElementById("send-message").addEventListener("submit", postChat);
+        function postChat(e) {
+            e.preventDefault();
+            const timestamp = Date.now();
+            const chatTxt = document.getElementById("chat-txt");
+            const message = chatTxt.value;
+            chatTxt.value = "";
+            db.ref("messages/" + timestamp).set({
+                usr: username,
+                msg: message,
+            });
+        }
+        const fetchChat = db.ref("messages/");
+        fetchChat.on("child_added", function (snapshot) {
+            const messages = snapshot.val();
+            const msg = "<li>" + messages.usr + " : " + messages.msg + "</li>";
+            document.getElementById("messages").innerHTML += msg;
+        });
+    </script>
+</body>
+
+</html>
